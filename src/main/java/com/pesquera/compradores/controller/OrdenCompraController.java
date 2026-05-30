@@ -1,6 +1,8 @@
 package com.pesquera.compradores.controller;
 
+import com.pesquera.compradores.dto.OrdenCompraMapper;
 import com.pesquera.compradores.dto.OrdenCompraRequestDTO;
+import com.pesquera.compradores.dto.OrdenCompraResponseDTO;
 import com.pesquera.compradores.model.Comprador;
 import com.pesquera.compradores.model.OrdenCompra;
 import com.pesquera.compradores.model.EstadoOrden;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/ordenes")
@@ -22,43 +25,40 @@ public class OrdenCompraController {
     private final CompradorService compradorService;
 
     @PostMapping
-    public ResponseEntity<OrdenCompra> crearOrden(@Valid @RequestBody OrdenCompraRequestDTO dto) {
+    public ResponseEntity<OrdenCompraResponseDTO> crearOrden(@Valid @RequestBody OrdenCompraRequestDTO dto) {
         Comprador comprador = compradorService.obtenerPorId(dto.getCompradorId());
-        OrdenCompra orden = new OrdenCompra();
+        OrdenCompra orden = OrdenCompraMapper.toEntity(dto);
         orden.setComprador(comprador);
-        orden.setEspecie(dto.getEspecie());
-        orden.setPrecioMaximo(dto.getPrecioMaximo());
-        orden.setKilosMaximos(dto.getKilosMaximos());
-        return ResponseEntity.status(HttpStatus.CREATED).body(ordenCompraService.crearOrden(orden));
+        return ResponseEntity.status(HttpStatus.CREATED).body(OrdenCompraMapper.toDTO(ordenCompraService.crearOrden(orden)));
     }
 
     @GetMapping
-    public ResponseEntity<List<OrdenCompra>> obtenerTodas() {
-        return ResponseEntity.ok(ordenCompraService.obtenerTodas());
+    public ResponseEntity<List<OrdenCompraResponseDTO>> obtenerTodas() {
+        return ResponseEntity.ok(ordenCompraService.obtenerTodas().stream().map(OrdenCompraMapper::toDTO).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrdenCompra> obtenerPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(ordenCompraService.obtenerPorId(id));
+    public ResponseEntity<OrdenCompraResponseDTO> obtenerPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(OrdenCompraMapper.toDTO(ordenCompraService.obtenerPorId(id)));
     }
 
     @GetMapping("/comprador/{compradorId}")
-    public ResponseEntity<List<OrdenCompra>> obtenerPorComprador(@PathVariable Long compradorId) {
-        return ResponseEntity.ok(ordenCompraService.obtenerPorComprador(compradorId));
+    public ResponseEntity<List<OrdenCompraResponseDTO>> obtenerPorComprador(@PathVariable Long compradorId) {
+        return ResponseEntity.ok(ordenCompraService.obtenerPorComprador(compradorId).stream().map(OrdenCompraMapper::toDTO).collect(Collectors.toList()));
     }
 
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<OrdenCompra>> obtenerPorEstado(@PathVariable EstadoOrden estado) {
-        return ResponseEntity.ok(ordenCompraService.obtenerPorEstado(estado));
+    public ResponseEntity<List<OrdenCompraResponseDTO>> obtenerPorEstado(@PathVariable EstadoOrden estado) {
+        return ResponseEntity.ok(ordenCompraService.obtenerPorEstado(estado).stream().map(OrdenCompraMapper::toDTO).collect(Collectors.toList()));
     }
 
     @PutMapping("/{id}/ejecutar")
-    public ResponseEntity<OrdenCompra> ejecutarOrden(@PathVariable Long id, @RequestParam Long subastaId) {
-        return ResponseEntity.ok(ordenCompraService.ejecutarOrden(id, subastaId));
+    public ResponseEntity<OrdenCompraResponseDTO> ejecutarOrden(@PathVariable Long id, @RequestParam Long subastaId) {
+        return ResponseEntity.ok(OrdenCompraMapper.toDTO(ordenCompraService.ejecutarOrden(id, subastaId)));
     }
 
     @PutMapping("/{id}/cancelar")
-    public ResponseEntity<OrdenCompra> cancelarOrden(@PathVariable Long id) {
-        return ResponseEntity.ok(ordenCompraService.cancelarOrden(id));
+    public ResponseEntity<OrdenCompraResponseDTO> cancelarOrden(@PathVariable Long id) {
+        return ResponseEntity.ok(OrdenCompraMapper.toDTO(ordenCompraService.cancelarOrden(id)));
     }
 }
