@@ -1,5 +1,6 @@
 package com.pesquera.compradores.service;
 
+import com.pesquera.compradores.exception.RecursoNoEncontradoException;
 import com.pesquera.compradores.model.Comprador;
 import com.pesquera.compradores.repository.CompradorRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,12 @@ public class CompradorService {
 
     public Comprador obtenerPorId(Long id) {
         return compradorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comprador no encontrado con id: " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Comprador no encontrado con id: " + id));
     }
 
     public Comprador obtenerPorRut(String rut) {
         return compradorRepository.findByRut(rut)
-                .orElseThrow(() -> new RuntimeException("Comprador no encontrado con rut: " + rut));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Comprador no encontrado con rut: " + rut));
     }
 
     public List<Comprador> obtenerActivos() {

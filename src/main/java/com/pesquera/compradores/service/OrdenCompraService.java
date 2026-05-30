@@ -1,5 +1,6 @@
 package com.pesquera.compradores.service;
 
+import com.pesquera.compradores.exception.RecursoNoEncontradoException;
 import com.pesquera.compradores.model.OrdenCompra;
 import com.pesquera.compradores.model.EstadoOrden;
 import com.pesquera.compradores.repository.OrdenCompraRepository;
@@ -26,7 +27,7 @@ public class OrdenCompraService {
 
     public OrdenCompra obtenerPorId(Long id) {
         return ordenCompraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Orden no encontrada con id: " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Orden no encontrada con id: " + id));
     }
 
     public List<OrdenCompra> obtenerPorComprador(Long compradorId) {
